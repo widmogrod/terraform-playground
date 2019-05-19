@@ -1,5 +1,8 @@
 variable github_token {}
 variable github_organization {}
+variable cidr_block {
+	default = "10.0.0.0/21"
+}
 
 provider "aws" {
   access_key = "${var.aws_access_key}"
@@ -8,7 +11,7 @@ provider "aws" {
 }
 
 resource "aws_vpc" "vpcity" {
-  cidr_block       = "10.0.0.0/21"
+  cidr_block       = "${var.cidr_block}"
   instance_tenancy = "default"
 
   tags = {
@@ -128,6 +131,71 @@ resource "aws_route_table_association" "vpcity-spare" {
   subnet_id      = "${aws_subnet.vpcity-a-spare.id}"
   route_table_id = "${aws_route_table.vpcity-private-roads.id}"
 }
+
+# Security groups
+resource "aws_security_group" "private-http" {
+  name        = "private-http"
+  description = "Allow private HTTP"
+	vpc_id      = "${aws_vpc.vpcity.id}"
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["${var.cidr_block}"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["${var.cidr_block}"]
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+	tags {
+		Name = "private-http"
+	}
+}
+
+resource "aws_security_group" "public-http" {
+  name        = "public-http"
+  description = "Allow public HTTP"
+	vpc_id      = "${aws_vpc.vpcity.id}"
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+
+	tags {
+		Name = "public-http"
+	}
+}
+
+
+# Main
 
 module "cicd" {
   source = "./github/"
