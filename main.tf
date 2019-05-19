@@ -1,7 +1,7 @@
 variable github_token {}
 variable github_organization {}
 variable cidr_block {
-	default = "10.0.0.0/21"
+	default = "10.0.0.0/16"
 }
 
 provider "aws" {
@@ -20,7 +20,7 @@ resource "aws_vpc" "vpcity" {
 }
 
 resource "aws_subnet" "vpcity-a-public" {
-  cidr_block        = "10.0.0.0/24"
+  cidr_block        = "10.0.1.0/24"
   availability_zone = "${var.aws_region}a"
   vpc_id            = "${aws_vpc.vpcity.id}"
 
@@ -30,7 +30,7 @@ resource "aws_subnet" "vpcity-a-public" {
 }
 
 resource "aws_subnet" "vpcity-a-private" {
-  cidr_block        = "10.0.1.128/26"
+  cidr_block        = "10.0.2.0/24"
   availability_zone = "${var.aws_region}a"
   vpc_id            = "${aws_vpc.vpcity.id}"
 
@@ -40,7 +40,7 @@ resource "aws_subnet" "vpcity-a-private" {
 }
 
 resource "aws_subnet" "vpcity-a-db" {
-  cidr_block        = "10.0.1.0/25"
+  cidr_block        = "10.0.3.0/25"
   availability_zone = "${var.aws_region}a"
   vpc_id            = "${aws_vpc.vpcity.id}"
 
@@ -50,7 +50,7 @@ resource "aws_subnet" "vpcity-a-db" {
 }
 
 resource "aws_subnet" "vpcity-a-spare" {
-  cidr_block        = "10.0.1.192/26"
+  cidr_block        = "10.0.4.0/24"
   availability_zone = "${var.aws_region}a"
   vpc_id            = "${aws_vpc.vpcity.id}"
 
