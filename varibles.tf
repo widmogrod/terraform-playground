@@ -8,3 +8,6 @@ variable aws_secret_key {}
 variable amis {
   type = "map"
 }
+
+variable github_token {}
+variable github_organization {}

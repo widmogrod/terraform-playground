@@ -2,12 +2,6 @@ variable cidr_block {
 	default = "10.0.0.0/16"
 }
 
-provider "aws" {
-  access_key = "${var.aws_access_key}"
-  secret_key = "${var.aws_secret_key}"
-  region     = "${var.aws_region}"
-}
-
 resource "aws_vpc" "vpcity" {
   cidr_block       = "${var.cidr_block}"
   instance_tenancy = "default"
