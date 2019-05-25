@@ -4,7 +4,7 @@ variable github_organization {}
 # Main
 
 module "cicd" {
-  source = "./github/"
+  source = "./aws-codebuild-github/"
 
 	github_token        = "${var.github_token}"
 	github_organization = "${var.github_organization}"
