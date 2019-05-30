@@ -1,9 +1,27 @@
+terraform {
+  required_version = "~> 0.12.0"
+
+  backend "s3" {
+    bucket    = "terraform-state-5155"
+    key       = "playground/deployment.tfstate"
+    region    = "eu-west-1"
+  }
+}
+
+resource "aws_s3_bucket" "tfstate" {
+  bucket = "terraform-state-5155"
+  acl    = "private"
+
+  tags = {
+    Name        = "terraform-state-s3"
+    Managed     = "terraform"
+  }
+}
 
 # Main
 provider "aws" {
-  access_key = "${var.aws_access_key}"
-  secret_key = "${var.aws_secret_key}"
-  region     = "${var.aws_region}"
+  region     = "${var.aws_region_name}"
+  profile    = "${var.aws_profile}"
 }
 
 provider "github" {

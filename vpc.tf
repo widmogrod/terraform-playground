@@ -13,7 +13,7 @@ resource "aws_vpc" "vpcity" {
 
 resource "aws_subnet" "vpcity-a-public" {
   cidr_block        = "10.0.1.0/24"
-  availability_zone = "${var.aws_region}a"
+  availability_zone = "${var.aws_region_name}a"
   vpc_id            = "${aws_vpc.vpcity.id}"
 
   tags = {
@@ -23,7 +23,7 @@ resource "aws_subnet" "vpcity-a-public" {
 
 resource "aws_subnet" "vpcity-a-private" {
   cidr_block        = "10.0.2.0/24"
-  availability_zone = "${var.aws_region}a"
+  availability_zone = "${var.aws_region_name}a"
   vpc_id            = "${aws_vpc.vpcity.id}"
 
   tags = {
@@ -33,7 +33,7 @@ resource "aws_subnet" "vpcity-a-private" {
 
 resource "aws_subnet" "vpcity-a-db" {
   cidr_block        = "10.0.3.0/25"
-  availability_zone = "${var.aws_region}a"
+  availability_zone = "${var.aws_region_name}a"
   vpc_id            = "${aws_vpc.vpcity.id}"
 
   tags = {
@@ -43,7 +43,7 @@ resource "aws_subnet" "vpcity-a-db" {
 
 resource "aws_subnet" "vpcity-a-spare" {
   cidr_block        = "10.0.4.0/24"
-  availability_zone = "${var.aws_region}a"
+  availability_zone = "${var.aws_region_name}a"
   vpc_id            = "${aws_vpc.vpcity.id}"
 
   tags = {
@@ -150,7 +150,8 @@ resource "aws_security_group" "private-http" {
     protocol        = "-1"
     cidr_blocks     = ["0.0.0.0/0"]
   }
-	tags {
+
+	tags =  {
 		Name = "private-http"
 	}
 }
@@ -181,7 +182,7 @@ resource "aws_security_group" "public-http" {
     cidr_blocks     = ["0.0.0.0/0"]
   }
 
-	tags {
+	tags = {
 		Name = "public-http"
 	}
 }
