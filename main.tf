@@ -30,7 +30,7 @@ provider "github" {
 }
 
 module "build" {
-  source = "./aws-codebuild-github"
+  source = "./modules/aws-codebuild-github"
   name = "gh-test-ns"
   repo = "https://github.com/widmogrod/github-marketplace-playground.git"
 }
