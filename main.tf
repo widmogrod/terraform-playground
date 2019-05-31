@@ -35,6 +35,22 @@ module "build" {
   repo = "https://github.com/widmogrod/github-marketplace-playground.git"
 }
 
+module "build-lambda-test-sns" {
+  source = "./modules/aws-lambda"
+  # directory = "./lambdas/test-sns"
+}
+
+# module "broadcast-lambda" {
+#   source = "./.modules/"
+#   lambdas = [
+#     module.build-lambda-test-sns.arn
+#   ]
+# }
+
 output "gh_badge_url" {
   value = "${module.build.badge_url}"
+}
+
+output "zip" {
+  value = module.build-lambda-test-sns.zip
 }
