@@ -1,27 +1,42 @@
-data "aws_iam_policy_document" "example" {
+data aws_iam_policy_document role {
   statement {
-    actions   = ["sts:AssumeRole"]
+    actions   = [
+      "sts:AssumeRole",
+    ]
     principals {
       type        = "Service"
       identifiers = ["lambda.amazonaws.com"]
     }
   }
-  # statement {
-  #   actions = [
-  #     "sqs:ReceiveMessage",
-  #     "sqs:DeleteMessage",
-  #     "sqs:GetQueueAttributes",
-  #     "logs:CreateLogGroup",
-  #     "logs:CreateLogStream",
-  #     "logs:PutLogEvents"
-  #   ]
-  #   resources = ["*"]
-  # }
 }
 
-resource "aws_iam_role" "iam_for_lambda" {
-  name = "iam_for_lambda"
-  assume_role_policy = data.aws_iam_policy_document.example.json
+data aws_iam_policy_document policy {
+  statement {
+    actions = [
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource aws_iam_role this {
+  name               = "iam_for_lambda"
+  assume_role_policy = data.aws_iam_policy_document.role.json
+}
+
+resource aws_iam_policy this {
+  name   = "iam_for_lambda_sqs"
+  policy = data.aws_iam_policy_document.policy.json
+}
+
+resource aws_iam_role_policy_attachment this {
+  role       = "${aws_iam_role.this.name}"
+  policy_arn = "${aws_iam_policy.this.arn}"
 }
 
 variable directory {}
@@ -38,11 +53,10 @@ data "archive_file" "init" {
   output_path = local.path
 }
 
-
 resource "aws_lambda_function" "test_lambda" {
   filename         = local.path
-  function_name    = "${var.name}"
-  role             = aws_iam_role.iam_for_lambda.arn
+  function_name    = var.name
+  role             = aws_iam_role.this.arn
   handler          = "index.handler"
   source_code_hash = data.archive_file.init.output_base64sha256
   runtime          = "nodejs10.x"

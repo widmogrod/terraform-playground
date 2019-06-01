@@ -36,16 +36,18 @@ module "build" {
 }
 
 module "build-lambda-test-sns" {
-  source = "./modules/aws-lambda"
-  # directory = "./lambdas/test-sns"
+  source    = "./modules/aws-lambda"
+  directory = "${path.cwd}/lambdas"
+  name     = "test-sns"
 }
 
-# module "broadcast-lambda" {
-#   source = "./.modules/"
-#   lambdas = [
-#     module.build-lambda-test-sns.arn
-#   ]
-# }
+module "broadcast-lambda" {
+  source = "./modules/aws-sns-sqs-broadcast"
+  topic_name = "GitHubEvents"
+  lambdas = [
+    module.build-lambda-test-sns.arn
+  ]
+}
 
 output "gh_badge_url" {
   value = "${module.build.badge_url}"
