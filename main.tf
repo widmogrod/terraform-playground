@@ -8,7 +8,7 @@ terraform {
   }
 }
 
-resource "aws_s3_bucket" "tfstate" {
+resource aws_s3_bucket tfstate {
   bucket = "terraform-state-5155"
   acl    = "private"
 
@@ -19,29 +19,29 @@ resource "aws_s3_bucket" "tfstate" {
 }
 
 # Main
-provider "aws" {
-  region     = "${var.aws_region_name}"
-  profile    = "${var.aws_profile}"
+provider aws {
+  region     = var.aws_region_name
+  profile    = var.aws_profile
 }
 
-provider "github" {
-  token        = "${var.github_token}"
-  organization = "${var.github_organization}"
+provider github {
+  token        = var.github_token
+  organization = var.github_organization
 }
 
-module "build" {
+module build {
   source = "./modules/aws-codebuild-github"
   name = "gh-test-ns"
   repo = "https://github.com/widmogrod/github-marketplace-playground.git"
 }
 
-module "build-lambda-test-sns" {
+module build-lambda-test-sns {
   source    = "./modules/aws-lambda"
   directory = "${path.cwd}/lambdas"
   name     = "test-sns"
 }
 
-module "broadcast-lambda" {
+module broadcast-lambda {
   source = "./modules/aws-sns-sqs-broadcast"
   topic_name = "GitHubEvents"
   lambdas = [
@@ -49,6 +49,11 @@ module "broadcast-lambda" {
   ]
 }
 
-output "gh_badge_url" {
-  value = "${module.build.badge_url}"
+# module github-webhook-url {
+#   source = "./modules/aws-api-gateway-to-sns"
+#   sns_arn = module.broadcast-lambda.sns_arn
+# }
+
+output gh_badge_url {
+  value = module.build.badge_url
 }
