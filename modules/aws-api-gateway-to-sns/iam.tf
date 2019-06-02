@@ -22,7 +22,7 @@ data aws_iam_policy_document policy {
 }
 
 resource aws_iam_role this {
-  name               = "iam_for_apigateway_sns_publish"
+  name               = "iam_for_apigateway_sns_publish=${aws_api_gateway_rest_api.this.name}"
   assume_role_policy = data.aws_iam_policy_document.role.json
 }
 
