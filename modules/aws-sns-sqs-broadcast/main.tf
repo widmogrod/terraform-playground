@@ -23,7 +23,7 @@ resource aws_iam_role_policy_attachment this {
 variable topic_name {}
 variable lambdas {
   type = list(object({
-    lamnda_arn=string,
+    lambda_arn=string,
     role_name=string
   }))
 }
@@ -65,6 +65,6 @@ resource aws_lambda_event_source_mapping this {
   batch_size        = var.batch_size
   event_source_arn  = aws_sqs_queue.queue[count.index].arn
   enabled           = true
-  function_name     = var.lambdas[count.index].lamnda_arn
+  function_name     = var.lambdas[count.index].lambda_arn
   depends_on        = [aws_iam_role_policy_attachment.this]
 }

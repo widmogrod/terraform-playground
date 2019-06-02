@@ -45,10 +45,7 @@ module "broadcast-lambda" {
   source = "./modules/aws-sns-sqs-broadcast"
   topic_name = "GitHubEvents"
   lambdas = [
-    {
-      lamnda_arn = module.build-lambda-test-sns.lambda_arn
-      role_name = module.build-lambda-test-sns.role_name
-    }
+    module.build-lambda-test-sns
   ]
 }
 
