@@ -13,9 +13,6 @@ data aws_iam_policy_document role {
 data aws_iam_policy_document policy {
   statement {
     actions = [
-      "sqs:ReceiveMessage",
-      "sqs:DeleteMessage",
-      "sqs:GetQueueAttributes",
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents"
@@ -30,13 +27,13 @@ resource aws_iam_role this {
 }
 
 resource aws_iam_policy this {
-  name   = "iam_for_lambda_sqs"
+  name   = "iam_for_lambda_logs"
   policy = data.aws_iam_policy_document.policy.json
 }
 
 resource aws_iam_role_policy_attachment this {
-  role       = "${aws_iam_role.this.name}"
-  policy_arn = "${aws_iam_policy.this.arn}"
+  role       = aws_iam_role.this.name
+  policy_arn = aws_iam_policy.this.arn
 }
 
 variable directory {}
@@ -72,9 +69,12 @@ resource aws_lambda_function test_lambda {
   }
 }
 
-output arn {
+output lambda_arn {
   value = aws_lambda_function.test_lambda.arn
 }
-output zip {
-  value = local.path
+output role_arn {
+  value = aws_iam_role.this.arn
+}
+output role_name {
+  value = aws_iam_role.this.name
 }

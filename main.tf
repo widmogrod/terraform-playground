@@ -45,14 +45,13 @@ module "broadcast-lambda" {
   source = "./modules/aws-sns-sqs-broadcast"
   topic_name = "GitHubEvents"
   lambdas = [
-    module.build-lambda-test-sns.arn
+    {
+      lamnda_arn = module.build-lambda-test-sns.lambda_arn
+      role_name = module.build-lambda-test-sns.role_name
+    }
   ]
 }
 
 output "gh_badge_url" {
   value = "${module.build.badge_url}"
-}
-
-output "zip" {
-  value = module.build-lambda-test-sns.zip
 }

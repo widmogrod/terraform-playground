@@ -1,6 +1,31 @@
+data aws_iam_policy_document policy {
+  statement {
+    actions = [
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource aws_iam_policy this {
+  name   = "iam_for_lambda_sqs"
+  policy = data.aws_iam_policy_document.policy.json
+}
+
+resource aws_iam_role_policy_attachment this {
+  count      = local.consumers_count
+  role       = var.lambdas[count.index].role_name
+  policy_arn = aws_iam_policy.this.arn
+}
+
 variable topic_name {}
 variable lambdas {
-  type = list(string)
+  type = list(object({
+    lamnda_arn=string,
+    role_name=string
+  }))
 }
 variable batch_size {
   default = 1
@@ -28,7 +53,7 @@ resource aws_sqs_queue queue {
   }
 }
 
-resource aws_sns_topic_subscription user_updates_sqs_target {
+resource aws_sns_topic_subscription this {
   count     = local.consumers_count
   topic_arn = aws_sns_topic.topic.arn
   protocol  = "sqs"
@@ -40,5 +65,6 @@ resource aws_lambda_event_source_mapping this {
   batch_size        = var.batch_size
   event_source_arn  = aws_sqs_queue.queue[count.index].arn
   enabled           = true
-  function_name     = var.lambdas[count.index]
+  function_name     = var.lambdas[count.index].lamnda_arn
+  depends_on        = [aws_iam_role_policy_attachment.this]
 }
