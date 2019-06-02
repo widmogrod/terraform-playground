@@ -47,13 +47,13 @@ locals {
   managed = basename(path.module)
 }
 
-data "archive_file" "init" {
+data archive_file init {
   type        = "zip"
   source_dir = "${var.directory}/${var.name}"
   output_path = local.path
 }
 
-resource "aws_lambda_function" "test_lambda" {
+resource aws_lambda_function test_lambda {
   filename         = local.path
   function_name    = var.name
   role             = aws_iam_role.this.arn
@@ -72,9 +72,9 @@ resource "aws_lambda_function" "test_lambda" {
   }
 }
 
-output "arn" {
+output arn {
   value = aws_lambda_function.test_lambda.arn
 }
-output "zip" {
+output zip {
   value = local.path
 }
