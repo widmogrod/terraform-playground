@@ -49,11 +49,15 @@ module broadcast-lambda {
   ]
 }
 
-# module github-webhook-url {
-#   source = "./modules/aws-api-gateway-to-sns"
-#   sns_arn = module.broadcast-lambda.sns_arn
-# }
+module github-webhook-url {
+  source = "./modules/aws-api-gateway-to-sns"
+  sns_arn = module.broadcast-lambda.sns_arn
+}
 
 output gh_badge_url {
   value = module.build.badge_url
+}
+
+output gh_url {
+  value = module.github-webhook-url.url
 }

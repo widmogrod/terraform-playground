@@ -53,6 +53,36 @@ resource aws_sqs_queue queue {
   }
 }
 
+data aws_iam_policy_document sns2sqs {
+  count = local.consumers_count
+
+  statement {
+    actions = [
+      "sqs:SendMessage"
+    ]
+    principals {
+      type = "AWS"
+      identifiers = ["*"]
+    }
+    resources = [
+      aws_sqs_queue.queue[count.index].arn
+    ]
+    condition {
+      test = "ArnEquals"
+      variable = "aws:SourceArn"
+      values = [
+        aws_sns_topic.topic.arn
+      ]
+    }
+  }
+}
+
+resource aws_sqs_queue_policy this {
+  count = local.consumers_count
+  queue_url = aws_sqs_queue.queue[count.index].id
+  policy = data.aws_iam_policy_document.sns2sqs[count.index].json
+}
+
 resource aws_sns_topic_subscription this {
   count     = local.consumers_count
   topic_arn = aws_sns_topic.topic.arn
@@ -67,4 +97,8 @@ resource aws_lambda_event_source_mapping this {
   enabled           = true
   function_name     = var.lambdas[count.index].lambda_arn
   depends_on        = [aws_iam_role_policy_attachment.this]
+}
+
+output sns_arn {
+  value = aws_sns_topic.topic.arn
 }

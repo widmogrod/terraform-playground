@@ -22,6 +22,7 @@ data aws_iam_policy_document policy {
 }
 
 resource aws_iam_role this {
+  # name               = "iam_for_lambda:${var.name}"
   name               = "iam_for_lambda"
   assume_role_policy = data.aws_iam_policy_document.role.json
 }
