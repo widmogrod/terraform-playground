@@ -84,10 +84,11 @@ resource aws_sqs_queue_policy this {
 }
 
 resource aws_sns_topic_subscription this {
-  count     = local.consumers_count
-  topic_arn = aws_sns_topic.topic.arn
-  protocol  = "sqs"
-  endpoint  = aws_sqs_queue.queue[count.index].arn
+  count                = local.consumers_count
+  topic_arn            = aws_sns_topic.topic.arn
+  protocol             = "sqs"
+  endpoint             = aws_sqs_queue.queue[count.index].arn
+  raw_message_delivery = true
 }
 
 resource aws_lambda_event_source_mapping this {
