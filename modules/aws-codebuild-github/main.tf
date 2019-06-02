@@ -1,5 +1,5 @@
 resource random_id s3 {
-    byte_length = 8
+  byte_length = 8
 }
 
 variable repo {
@@ -7,13 +7,13 @@ variable repo {
 }
 
 variable name {
-  default = "example-project"
+  default     = "example-project"
   description = "Name of the project"
 }
 
 locals {
-  s3_bucket_name = "${var.name}-${random_id.s3.dec}"
-  s3_bucket_name_len = "${length(local.s3_bucket_name)}"
+  s3_bucket_name            = "${var.name}-${random_id.s3.dec}"
+  s3_bucket_name_len        = "${length(local.s3_bucket_name)}"
   s3_bucket_name_normalised = "${substr(local.s3_bucket_name, 0, min(local.s3_bucket_name_len, 63))}"
 }
 
@@ -100,9 +100,9 @@ resource "aws_codebuild_project" "default" {
   badge_enabled = true
 
   artifacts {
-    type = "S3"
+    type      = "S3"
     packaging = "ZIP"
-    location = "${aws_s3_bucket.default.bucket}"
+    location  = "${aws_s3_bucket.default.bucket}"
   }
 
   environment {
@@ -120,16 +120,16 @@ resource "aws_codebuild_project" "default" {
 
   tags = {
     "Environment" = "Test"
-    "Terraform" = "aws-codebuild-github"
+    "Terraform"   = "aws-codebuild-github"
   }
 }
 
 resource "aws_codebuild_webhook" "default" {
-	project_name = "${aws_codebuild_project.default.name}"
+ project_name = "${aws_codebuild_project.default.name}"
 }
 
 output "payload_url" {
-	value = "${aws_codebuild_webhook.default.payload_url}"
+ value = "${aws_codebuild_webhook.default.payload_url}"
 }
 
 output "badge_url" {

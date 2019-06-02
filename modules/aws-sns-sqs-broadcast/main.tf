@@ -23,8 +23,8 @@ resource aws_iam_role_policy_attachment this {
 variable topic_name {}
 variable lambdas {
   type = list(object({
-    lambda_arn=string,
-    role_name=string
+    lambda_arn = string,
+    role_name  = string
   }))
 }
 variable batch_size {
@@ -39,7 +39,7 @@ locals {
 resource aws_sns_topic topic {
   name = var.topic_name
   tags = {
-    Name = "${var.topic_name}-sns"
+    Name    = "${var.topic_name}-sns"
     Managed = local.managed
   }
 }
@@ -47,8 +47,8 @@ resource aws_sns_topic topic {
 resource aws_sqs_queue queue {
   count = local.consumers_count
   name  = "${var.topic_name}-${count.index}"
-  tags  = {
-    Name = "${var.topic_name}-sqs"
+  tags = {
+    Name    = "${var.topic_name}-sqs"
     Managed = local.managed
   }
 }
@@ -61,14 +61,14 @@ data aws_iam_policy_document sns2sqs {
       "sqs:SendMessage"
     ]
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = ["*"]
     }
     resources = [
       aws_sqs_queue.queue[count.index].arn
     ]
     condition {
-      test = "ArnEquals"
+      test     = "ArnEquals"
       variable = "aws:SourceArn"
       values = [
         aws_sns_topic.topic.arn
@@ -78,9 +78,9 @@ data aws_iam_policy_document sns2sqs {
 }
 
 resource aws_sqs_queue_policy this {
-  count = local.consumers_count
+  count     = local.consumers_count
   queue_url = aws_sqs_queue.queue[count.index].id
-  policy = data.aws_iam_policy_document.sns2sqs[count.index].json
+  policy    = data.aws_iam_policy_document.sns2sqs[count.index].json
 }
 
 resource aws_sns_topic_subscription this {
@@ -91,12 +91,12 @@ resource aws_sns_topic_subscription this {
 }
 
 resource aws_lambda_event_source_mapping this {
-  count             = local.consumers_count
-  batch_size        = var.batch_size
-  event_source_arn  = aws_sqs_queue.queue[count.index].arn
-  enabled           = true
-  function_name     = var.lambdas[count.index].lambda_arn
-  depends_on        = [aws_iam_role_policy_attachment.this]
+  count            = local.consumers_count
+  batch_size       = var.batch_size
+  event_source_arn = aws_sqs_queue.queue[count.index].arn
+  enabled          = true
+  function_name    = var.lambdas[count.index].lambda_arn
+  depends_on       = [aws_iam_role_policy_attachment.this]
 }
 
 output sns_arn {

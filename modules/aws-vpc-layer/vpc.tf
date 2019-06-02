@@ -1,5 +1,5 @@
 variable cidr_block {
-	default = "10.0.0.0/16"
+  default = "10.0.0.0/16"
 }
 
 resource "aws_vpc" "vpcity" {
@@ -78,9 +78,9 @@ resource "aws_route_table_association" "vpcity-a-public" {
   route_table_id = "${aws_route_table.vpcity-public-roads.id}"
 }
 
- # PRIVATE
+# PRIVATE
 resource "aws_eip" "vpcity-nat" {
-  vpc      = true
+  vpc = true
 
   tags = {
     Name = "vpcity-eip"
@@ -91,7 +91,7 @@ resource "aws_nat_gateway" "vpcity-gw" {
   allocation_id = "${aws_eip.vpcity-nat.id}"
   subnet_id     = "${aws_subnet.vpcity-a-public.id}"
 
-	depends_on = ["aws_internet_gateway.vpcity-public-roads-igw"]
+  depends_on = ["aws_internet_gateway.vpcity-public-roads-igw"]
 
   tags = {
     Name = "vpcity-nat-gw"
@@ -102,7 +102,7 @@ resource "aws_route_table" "vpcity-private-roads" {
   vpc_id = "${aws_vpc.vpcity.id}"
 
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block     = "0.0.0.0/0"
     nat_gateway_id = "${aws_nat_gateway.vpcity-gw.id}"
   }
 
@@ -128,7 +128,7 @@ resource "aws_route_table_association" "vpcity-spare" {
 resource "aws_security_group" "private-http" {
   name        = "private-http"
   description = "Allow private HTTP"
-	vpc_id      = "${aws_vpc.vpcity.id}"
+  vpc_id      = "${aws_vpc.vpcity.id}"
 
   ingress {
     from_port   = 443
@@ -145,21 +145,21 @@ resource "aws_security_group" "private-http" {
   }
 
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-	tags =  {
-		Name = "private-http"
-	}
+  tags = {
+    Name = "private-http"
+  }
 }
 
 resource "aws_security_group" "public-http" {
   name        = "public-http"
   description = "Allow public HTTP"
-	vpc_id      = "${aws_vpc.vpcity.id}"
+  vpc_id      = "${aws_vpc.vpcity.id}"
 
   ingress {
     from_port   = 443
@@ -176,13 +176,13 @@ resource "aws_security_group" "public-http" {
   }
 
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-	tags = {
-		Name = "public-http"
-	}
+  tags = {
+    Name = "public-http"
+  }
 }

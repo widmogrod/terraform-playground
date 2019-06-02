@@ -1,6 +1,6 @@
 data aws_iam_policy_document role {
   statement {
-    actions   = [
+    actions = [
       "sts:AssumeRole",
     ]
     principals {

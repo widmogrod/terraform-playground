@@ -2,9 +2,9 @@ terraform {
   required_version = "~> 0.12.0"
 
   backend "s3" {
-    bucket    = "terraform-state-5155"
-    key       = "playground/deployment.tfstate"
-    region    = "eu-west-1"
+    bucket = "terraform-state-5155"
+    key    = "playground/deployment.tfstate"
+    region = "eu-west-1"
   }
 }
 
@@ -13,15 +13,15 @@ resource aws_s3_bucket tfstate {
   acl    = "private"
 
   tags = {
-    Name        = "terraform-state-s3"
-    Managed     = "terraform"
+    Name    = "terraform-state-s3"
+    Managed = "terraform"
   }
 }
 
 # Main
 provider aws {
-  region     = var.aws_region_name
-  profile    = var.aws_profile
+  region  = var.aws_region_name
+  profile = var.aws_profile
 }
 
 provider github {
@@ -31,18 +31,18 @@ provider github {
 
 module build {
   source = "./modules/aws-codebuild-github"
-  name = "gh-test-ns"
-  repo = "https://github.com/widmogrod/github-marketplace-playground.git"
+  name   = "gh-test-ns"
+  repo   = "https://github.com/widmogrod/github-marketplace-playground.git"
 }
 
 module build-lambda-test-sns {
   source    = "./modules/aws-lambda"
   directory = "${path.cwd}/lambdas"
-  name     = "test-sns"
+  name      = "test-sns"
 }
 
 module broadcast-lambda {
-  source = "./modules/aws-sns-sqs-broadcast"
+  source     = "./modules/aws-sns-sqs-broadcast"
   topic_name = "GitHubEvents"
   lambdas = [
     module.build-lambda-test-sns
@@ -50,7 +50,7 @@ module broadcast-lambda {
 }
 
 module github-webhook-url {
-  source = "./modules/aws-api-gateway-to-sns"
+  source  = "./modules/aws-api-gateway-to-sns"
   sns_arn = module.broadcast-lambda.sns_arn
 }
 

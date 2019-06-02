@@ -50,9 +50,9 @@ resource aws_api_gateway_integration this {
   resource_id = aws_api_gateway_resource.this.id
   http_method = aws_api_gateway_method.this.http_method
 
-  type        = "AWS"
-  credentials = aws_iam_role.this.arn
-  uri         = "arn:aws:apigateway:${var.region}:sns:path//"
+  type                    = "AWS"
+  credentials             = aws_iam_role.this.arn
+  uri                     = "arn:aws:apigateway:${var.region}:sns:path//"
   integration_http_method = "POST"
   passthrough_behavior    = "NEVER"
 

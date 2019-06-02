@@ -1,6 +1,6 @@
 data aws_iam_policy_document role {
   statement {
-    actions   = [
+    actions = [
       "sts:AssumeRole",
     ]
     principals {
@@ -40,13 +40,13 @@ variable directory {}
 variable name {}
 
 locals {
-  path = "${var.directory}/${var.name}.zip"
+  path    = "${var.directory}/${var.name}.zip"
   managed = basename(path.module)
 }
 
 data archive_file init {
   type        = "zip"
-  source_dir = "${var.directory}/${var.name}"
+  source_dir  = "${var.directory}/${var.name}"
   output_path = local.path
 }
 
