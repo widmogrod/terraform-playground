@@ -66,17 +66,16 @@ resource aws_api_gateway_integration this {
     "integration.request.header.Content-Type" = "'application/x-www-form-urlencoded'"
   }
 
-  # Transforms the incoming XML request to JSON
   request_templates = {
     "application/json" = <<EOF
-Action=Publish&TopicArn=$util.urlEncode('${var.sns_arn}')&Message=$util.urlEncode({
-  "headers": {
+Action=Publish&TopicArn=$util.urlEncode('arn:aws:sns:eu-west-1:483648412454:GitHubEvents')&Message={
+  "header": {
     "X-GitHub-Event": "$util.escapeJavaScript($input.params().header.get('X-GitHub-Event'))",
     "X-Hub-Signature": "$util.escapeJavaScript($input.params().header.get('X-Hub-Signature'))",
     "X-GitHub-Delivery": "$util.escapeJavaScript($input.params().header.get('X-GitHub-Delivery'))"
   },
-  "body":$input.json('$')
-})
+  "body":$util.urlEncode($input.json('$'))
+}
 EOF
   }
 }
