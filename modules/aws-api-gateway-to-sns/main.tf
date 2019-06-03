@@ -28,6 +28,12 @@ resource aws_api_gateway_method this {
   resource_id   = aws_api_gateway_resource.this.id
   http_method   = "POST"
   authorization = "NONE"
+
+  request_parameters = {
+    "method.request.header.X-Hub-Signature" = true
+    "method.request.header.X-GitHub-Delivery" = true
+    "method.request.header.X-GitHub-Event" = true
+  }
 }
 
 # resource aws_api_gateway_method_settings s {
@@ -63,7 +69,14 @@ resource aws_api_gateway_integration this {
   # Transforms the incoming XML request to JSON
   request_templates = {
     "application/json" = <<EOF
-Action=Publish&TopicArn=$util.urlEncode('${var.sns_arn}')&Message=$util.urlEncode($input.body)
+Action=Publish&TopicArn=$util.urlEncode('${var.sns_arn}')&Message=$util.urlEncode({
+  "headers": {
+    "X-GitHub-Event": "$util.escapeJavaScript($input.params().header.get('X-GitHub-Event'))",
+    "X-Hub-Signature": "$util.escapeJavaScript($input.params().header.get('X-Hub-Signature'))",
+    "X-GitHub-Delivery": "$util.escapeJavaScript($input.params().header.get('X-GitHub-Delivery'))"
+  },
+  "body":$input.json('$')
+})
 EOF
   }
 }
